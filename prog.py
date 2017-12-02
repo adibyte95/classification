@@ -1,11 +1,13 @@
 import keras       # machine learning built on top of tensor flow
 import numpy as np # to do the maths
 import os
+from PIL import Image as pil_image
 from keras.models import Sequential
 from keras.layers import Activation, Dropout, Flatten, Dense
 from keras.preprocessing.image import ImageDataGenerator
-from keras.layers import Convolution2D, MaxPooling2D, ZeroPadding2D
+from keras.layers import Conv2D, MaxPooling2D, ZeroPadding2D
 from keras import optimizers
+
 img_width, img_height = 150, 150
 
 train_data_dir = 'data/train'
@@ -28,17 +30,17 @@ validation_generator = datagen.flow_from_directory(
 
 #step 2  - BUILD THE MODEL
 model = Sequential()
-model.add(Convolution2D(32,3,3,input_shape = (img_width,img_height,3)))
+model.add(Conv2D(32,(3,3),input_shape = (img_width,img_height,3)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2,2)))
 
 
-model.add(Convolution2D(32,3,3,input_shape = (img_width,img_height,3)))
+model.add(Conv2D(32,(3,3),input_shape = (img_width,img_height,3)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2,2)))
 
 
-model.add(Convolution2D(32,3,3,input_shape = (img_width,img_height,3)))
+model.add(Conv2D(32,(3,3),input_shape = (img_width,img_height,3)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2,2)))
 
@@ -54,14 +56,9 @@ model.compile(loss = 'binary_crossentropy',
 #step 3- TRAINING THE MODEL
 model.fit_generator(
     train_generator,
-    samples_per_epoch = 2048,
-    nb_epoch=30,
+    steps_per_epoch =100,
+    epochs=10,
     validation_data=validation_generator,
-    nb_val_samples = 832)
-model.save_weights('models/simple_CNN.h5')
-
-
-# step - TESTING THE MODEL
-img = image.load_img('test/img001.jpg',target_size = (224,224))
-prediction = model.predict(img)
-print('prediction: ',prediction)
+    nb_val_samples = 80)
+model.save_weights('models/weights.h5')
+model.save('models/model.h5')
